@@ -1,0 +1,40 @@
+type User @table {
+  username: String!
+  passwordHash: String!
+  email: String!
+  createdAt: Timestamp!
+  displayName: String
+  photoUrl: String
+  bio: String
+  lastLoginAt: Timestamp
+  isActive: Boolean
+}
+
+type Session @table {
+  user: User
+  token: String!
+  expiresAt: Timestamp!
+  createdAt: Timestamp!
+  ipAddress: String
+  userAgent: String
+}
+
+type Role @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type UserRole @table(key: ["user", "role"]) {
+  user: User!
+  role: Role!
+  assignedAt: Timestamp!
+}
+
+type PasswordResetToken @table {
+  user: User
+  token: String!
+  expiresAt: Timestamp!
+  createdAt: Timestamp!
+  isUsed: Boolean
+}
