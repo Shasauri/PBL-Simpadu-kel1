@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
   // Sesuaikan URL dengan device testing kamu (10.0.2.2 untuk emulator Android)
-  static const String baseUrl = "http://10.172.145.167:8000/api/akademik/users";
+  static const String baseUrl =
+      "https://admin4e06.vps-poliban.my.id/api/akademik/users";
 
   static Future<List<UserModel>> fetchUsers() async {
     try {
@@ -47,7 +48,7 @@ class UserService {
   }
 
   static const String registerUrl =
-      "http://10.172.145.167:8000/api/akademik/register";
+      "https://admin4e06.vps-poliban.my.id/api/akademik/register";
 
   static Future<bool> registerUser({
     required String name,
@@ -102,7 +103,7 @@ class UserService {
 
       // Alamat endpoint disesuaikan dengan ID user yang dipilih
       final String updateUrl =
-          "http://10.172.145.167:8000/api/akademik/users/$userId";
+          "https://admin4e06.vps-poliban.my.id/api/akademik/users/$userId";
 
       final response = await http.put(
         Uri.parse(updateUrl),
@@ -127,69 +128,73 @@ class UserService {
 
   // Di dalam class UserService:
 
-// 1. Ambil data detail pegawai berdasarkan ID
-static Future<UserModel?> fetchUserDetail(int userId) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('auth_token');
-    final String detailUrl = "http://10.172.145.167:8000/api/akademik/users/$userId";
+  // 1. Ambil data detail pegawai berdasarkan ID
+  static Future<UserModel?> fetchUserDetail(int userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('auth_token');
+      final String detailUrl =
+          "https://admin4e06.vps-poliban.my.id/api/akademik/users/$userId";
 
-    final response = await http.get(
-      Uri.parse(detailUrl),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+      final response = await http.get(
+        Uri.parse(detailUrl),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return UserModel.fromJson(data); // Pastikan UserModel kamu sudah mendukung response roles array terbaru
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return UserModel.fromJson(
+          data,
+        ); // Pastikan UserModel kamu sudah mendukung response roles array terbaru
+      }
+      return null;
+    } catch (e) {
+      print("Error fetch detail pegawai: $e");
+      return null;
     }
-    return null;
-  } catch (e) {
-    print("Error fetch detail pegawai: $e");
-    return null;
   }
-}
 
-// 2. Kirim update data pegawai (PUT)
-static Future<bool> updateUserDetail({
-  required int userId,
-  required String name,
-  required String username,
-  required String nomorIdentitas,
-  required String email,
-  required int roleId,
-  required String status,
-}) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('auth_token');
-    final String updateUrl = "http://10.172.145.167:8000/api/akademik/users/$userId";
+  // 2. Kirim update data pegawai (PUT)
+  static Future<bool> updateUserDetail({
+    required int userId,
+    required String name,
+    required String username,
+    required String nomorIdentitas,
+    required String email,
+    required int roleId,
+    required String status,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('auth_token');
+      final String updateUrl =
+          "https://admin4e06.vps-poliban.my.id/api/akademik/users/$userId";
 
-    final response = await http.put(
-      Uri.parse(updateUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        "name": name,
-        "username": username,
-        "nomor_identitas": nomorIdentitas,
-        "email": email,
-        "role_id": roleId,
-        "status": status,
-      }),
-    );
+      final response = await http.put(
+        Uri.parse(updateUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "name": name,
+          "username": username,
+          "nomor_identitas": nomorIdentitas,
+          "email": email,
+          "role_id": roleId,
+          "status": status,
+        }),
+      );
 
-    print("Status PUT Edit: ${response.statusCode}");
-    return response.statusCode == 200;
-  } catch (e) {
-    print("Error update data pegawai: $e");
-    return false;
+      print("Status PUT Edit: ${response.statusCode}");
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error update data pegawai: $e");
+      return false;
+    }
   }
-}
 }

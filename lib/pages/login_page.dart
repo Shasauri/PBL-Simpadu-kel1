@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:mobile_kel1/pages/dashboard_admin_akademik_page.dart';
+// import 'package:http/http.dart';
+import 'package:mobile_kel1/pages/adminAkademik/dashboard_admin_akademik_page.dart';
+// import 'package:mobile_kel1/pages/dashboard_admin_akademik_page.dart';
 import 'package:mobile_kel1/services/auth_service.dart';
 import 'package:mobile_kel1/pages/dashboard_super_admin_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,15 +37,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
     super.dispose();
   }
-
-  // void _handleLogin() {
-  //   // Fungsi dummy untuk tombol login
-  //   final email = _emailController.text;
-  //   final password = _passwordController.text;
-
-  //   print("Mencoba login dengan Email: $email dan Pass: $password");
-  //   // Nanti di sini logic API dipanggil
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -281,76 +273,75 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLoginButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton(
-        onPressed: () async {
-          try {
-            // Reset status error setiap kali tombol ditekan kembali
-            setState(() {
-              _isLoginError = false;
-            });
+ Widget _buildLoginButton() {
+  return SizedBox(
+    width: double.infinity,
+    height: 48.0,
+    child: ElevatedButton(
+      onPressed: () async {
+        final String email = _emailController.text.trim();
+        final String password = _passwordController.text.trim();
 
-            final result = await AuthService().login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+        if (email.isEmpty || password.isEmpty) {
+          setState(() {
+            _isLoginError = true;
+          });
+          return;
+        }
 
-            print(result);
+        try {
+          // Memanggil fungsi login dari AuthService
+          final authService = AuthService();
+          final response = await authService.login(email, password);
 
-            List roles = result['roles'];
-            String role = roles[0];
-            print(role);
+          // Ambil instance untuk memeriksa role yang disimpan oleh service
+          final prefs = await SharedPreferences.getInstance();
+          final String? savedRole = prefs.getString('admin_role');
 
-            // int roleId = result['role_id'];
-
-            
-
-            if (role == 'super_admin') {
+          if (mounted) {
+            // Pengondisian Navigasi Berdasarkan Jenis Akun / Role
+            if (savedRole == 'Admin Academic' || email.contains('akademik')) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DashboardAdminAkademik(),
+                ),
+              );
+            } else {
+              // Jika bukan admin akademik, arahkan ke dashboard super admin bawaan
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const DashboardSuperAdmin(),
                 ),
               );
-            } else if (role == 'admin_akademik') {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AdminAkademikHomePage(),
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Role tidak dikenali.')),
-              );
             }
-          } catch (e) {
-            // KUNCI PERUBAHAN: Aktifkan tampilan banner error merah
-            setState(() {
-              _isLoginError = true;
-            });
           }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          elevation: 0,
-        ),
-        child: const Text(
-          "Masuk",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'SansSerif',
-          ),
+        } catch (e) {
+          print("Login Error Exception di UI: $e");
+          // Tampilkan banner merah jika response server gagal/error
+          setState(() {
+            _isLoginError = true;
+          });
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryBlue,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 0,
+      ),
+      child: const Text(
+        "Masuk",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'SansSerif',
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildErrorBanner() {
     if (!_isLoginError)

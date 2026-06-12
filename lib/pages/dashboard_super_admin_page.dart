@@ -707,7 +707,7 @@ class _DashboardSuperAdminState extends State<DashboardSuperAdmin> {
                 children: [
                   _buildStatCard(
                     akademikCount.toString(),
-                    "Admin Academic",
+                    "Admin Akademik",
                     const Color(0xFF2D62ED),
                     Icons.school,
                   ),
