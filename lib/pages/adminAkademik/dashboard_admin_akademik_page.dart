@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_kel1/pages/adminAkademik/kelas_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/prodi_jurusan_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/profil_admin_akademik_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/tahun_akademik_page.dart';
@@ -212,7 +213,7 @@ class _DashboardAdminAkademikState extends State<DashboardAdminAkademik> {
                       label: "Kelas",
                       onTap: () {
                         Navigator.pop(context);
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => const KelasPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const KelasPage()));
                       },
                     ),
                     _buildDrawerItem(
