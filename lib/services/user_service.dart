@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserService {
   // Sesuaikan URL dengan device testing kamu (10.0.2.2 untuk emulator Android)
   static const String baseUrl =
-      "http://192.168.1.83:8000/api/akademik/users";
+      "https://admin4e06.vps-poliban.my.id//api/akademik/users";
 
   static Future<List<UserModel>> fetchUsers() async {
     try {

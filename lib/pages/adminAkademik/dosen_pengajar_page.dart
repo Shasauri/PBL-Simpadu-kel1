@@ -429,10 +429,10 @@ class _DosenPengajarPageState extends State<DosenPengajarPage> {
                             "tahun_akademik_id": selectedTaId,
                           };
 
-                          bool success = false;
+                          Map<String, dynamic> result = {};
                           try {
                             setState(() => _isLoading = true);
-                            success = await AcademicService.assignDosenKeKelas(
+                            result = await AcademicService.assignDosenKeKelas(
                               idKelasDiterget,
                               bodyPayload,
                             );
@@ -442,11 +442,14 @@ class _DosenPengajarPageState extends State<DosenPengajarPage> {
 
                           if (!mounted) return;
 
+                          final bool success = result['success'] as bool;
+                          final String? message = result['message'] as String?;
+
                           if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  "Sukses mendistribusikan dosen pengajar ke kelas!",
+                                  message ?? "Sukses mendistribusikan dosen pengajar ke kelas!",
                                 ),
                                 backgroundColor: Colors.green,
                                 behavior: SnackBarBehavior.floating,
@@ -455,9 +458,9 @@ class _DosenPengajarPageState extends State<DosenPengajarPage> {
                             _loadBebanMengajar();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  "Gagal menambahkan beban mengajar dosen.",
+                                  message ?? "Gagal menambahkan beban mengajar dosen.",
                                 ),
                                 backgroundColor: Colors.red,
                                 behavior: SnackBarBehavior.floating,

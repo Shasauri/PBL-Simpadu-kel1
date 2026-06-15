@@ -348,7 +348,6 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                           ),
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
-                              Navigator.pop(context);
                               setState(() => _isLoading = true);
                               final updatePayload = {
                                 "prodi_id": selectedProdiId,
@@ -362,6 +361,7 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                                     idMk,
                                     updatePayload,
                                   );
+                              Navigator.pop(context);
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -383,7 +383,7 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                                   ),
                                 );
                               }
-                              _loadMataKuliah();
+                              await _loadMataKuliah();
                             }
                           },
                           child: const Text(
@@ -677,7 +677,7 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                           ),
                           onPressed: () async {
                             if (formKey.currentState!.validate()) {
-                              Navigator.pop(context);
+                              
                               setState(() => _isLoading = true);
                               final bodyPayload = {
                                 "prodi_id": selectedProdiId,
@@ -690,6 +690,7 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                                   await AcademicService.createMataKuliah(
                                     bodyPayload,
                                   );
+                              Navigator.pop(context);
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -711,7 +712,7 @@ class _MataKuliahPageState extends State<MataKuliahPage> {
                                   ),
                                 );
                               }
-                              _loadMataKuliah();
+                              await _loadMataKuliah();
                             }
                           },
                           child: const Text(
