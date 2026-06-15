@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_kel1/pages/adminAkademik/dosen_pengajar_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/kelas_page.dart';
+import 'package:mobile_kel1/pages/adminAkademik/mata_kuliah_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/prodi_jurusan_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/profil_admin_akademik_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/tahun_akademik_page.dart';
@@ -242,6 +243,12 @@ class _DashboardAdminAkademikState extends State<DashboardAdminAkademik> {
                       label: "Mata Kuliah",
                       onTap: () {
                         Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MataKuliahPage(),
+                          ),
+                        );
                       },
                     ),
                     _buildDrawerItem(

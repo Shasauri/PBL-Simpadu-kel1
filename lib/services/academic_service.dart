@@ -5,8 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AcademicService {
   // Set ke server VPS yang sama dengan AuthService
-  static const String baseUrl =
-      "http://10.146.237.167:8000/api/akademik";
+  static const String baseUrl = "http://192.168.1.83:8000/api/akademik";
 
   static Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
@@ -237,305 +236,442 @@ class AcademicService {
 
   // Tambahkan di dalam class AcademicService:
 
-// 1. Update Data Jurusan (PUT)
-static Future<bool> updateJurusan(int id, String namaJurusan) async {
-  try {
-    final response = await http.put(
-      Uri.parse("$baseUrl/jurusan/$id"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...await _getHeaders(),
-      },
-      body: jsonEncode({
-        "nama_jurusan": namaJurusan,
-      }),
-    );
-    return response.statusCode == 200;
-  } catch (e) {
-    print("Error update jurusan: $e");
-    return false;
-  }
-}
-
-// 2. Update Data Program Studi (PUT)
-static Future<bool> updateProdi(int id, int jurusanId, String namaProdi) async {
-  try {
-    final response = await http.put(
-      Uri.parse("$baseUrl/prodis/$id"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...await _getHeaders(),
-      },
-      body: jsonEncode({
-        "jurusan_id": jurusanId,
-        "nama_prodi": namaProdi,
-      }),
-    );
-    return response.statusCode == 200;
-  } catch (e) {
-    print("Error update prodi: $e");
-    return false;
-  }
-}
-
-// Tambahkan di dalam class AcademicService:
-
-// 1. Fetch Semua Data Kelas (GET)
-static Future<List<dynamic>> fetchAllKelas() async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/kelas"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+  // 1. Update Data Jurusan (PUT)
+  static Future<bool> updateJurusan(int id, String namaJurusan) async {
+    try {
+      final response = await http.put(
+        Uri.parse("$baseUrl/jurusan/$id"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode({"nama_jurusan": namaJurusan}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error update jurusan: $e");
+      return false;
     }
-    return [];
-  } catch (e) {
-    print("Error fetch all kelas: $e");
-    return [];
   }
-}
 
-// 2. Fetch Detail Kelas Berdasarkan ID (GET)
-static Future<Map<String, dynamic>?> fetchDetailKelas(int idKelas) async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/kelas/$idKelas"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      // Ambil objek "kelas" dari response
-      return data['kelas'] as Map<String, dynamic>;
+  // 2. Update Data Program Studi (PUT)
+  static Future<bool> updateProdi(
+    int id,
+    int jurusanId,
+    String namaProdi,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse("$baseUrl/prodis/$id"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode({"jurusan_id": jurusanId, "nama_prodi": namaProdi}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error update prodi: $e");
+      return false;
     }
-    return null;
-  } catch (e) {
-    print("Error fetch detail kelas: $e");
-    return null;
   }
-}
 
-// 3. Tambah Kelas Baru (POST)
-static Future<bool> createKelas(Map<String, dynamic> bodyData) async {
-  try {
-    final response = await http.post(
-      Uri.parse("$baseUrl/kelas"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...await _getHeaders(),
-      },
-      body: jsonEncode(bodyData),
-    );
-    return response.statusCode == 200 || response.statusCode == 201;
-  } catch (e) {
-    print("Error create kelas: $e");
-    return false;
-  }
-}
+  // Tambahkan di dalam class AcademicService:
 
-// 4. Ubah Data Kelas (PUT)
-static Future<bool> updateKelas(int idKelas, Map<String, dynamic> bodyData) async {
-  try {
-    final response = await http.put(
-      Uri.parse("$baseUrl/kelas/$idKelas"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...await _getHeaders(),
-      },
-      body: jsonEncode(bodyData),
-    );
-    return response.statusCode == 200;
-  } catch (e) {
-    print("Error update kelas: $e");
-    return false;
-  }
-}
-
-// Tambahkan di dalam class AcademicService:
-
-// 1. Fetch Detail Kelas & Mahasiswa Didalamnya (GET)
-static Future<Map<String, dynamic>?> fetchDetailKelolaKelas(int idKelas) async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/kelas/$idKelas"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return null;
-  } catch (e) {
-    print("Error fetch kelola kelas: $e");
-    return null;
-  }
-}
-
-// 2. Fetch List Anggota Mahasiswa di Kelas Tersebut (GET)
-static Future<List<dynamic>> fetchMahasiswaKelas(int idKelas) async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/kelas/$idKelas/mahasiswa"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data is List) {
-        return data;
-      } else if (data is Map && data.containsKey('data')) {
-        return data['data'];
+  // 1. Fetch Semua Data Kelas (GET)
+  static Future<List<dynamic>> fetchAllKelas() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/kelas"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
       }
+      return [];
+    } catch (e) {
+      print("Error fetch all kelas: $e");
+      return [];
     }
-    return [];
-  } catch (e) {
-    print("Error fetch mahasiswa kelas: $e");
-    return [];
   }
-}
 
-// 3. Hapus/Keluarkan Mahasiswa dari Kelas (DELETE)
-static Future<bool> deleteMahasiswaDariKelas(int idMahasiswaMk) async {
-  try {
-    final response = await http.delete(
-      Uri.parse("$baseUrl/mahasiswa-kelas/$idMahasiswaMk"),
-      headers: await _getHeaders(),
-    );
-    return response.statusCode == 200;
-  } catch (e) {
-    print("Error delete mahasiswa kelas: $e");
-    return false;
-  }
-}
-
-// Tambahkan di dalam class AcademicService:
-
-// Fetch Data Beban Mengajar Dosen (GET)
-static Future<List<dynamic>> fetchBebanMengajarDosen() async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/dosen/beban-mengajar"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return [];
-  } catch (e) {
-    print("Error fetch beban mengajar dosen: $e");
-    return [];
-  }
-}
-
-// Tambahkan di dalam class AcademicService:
-
-// 1. Ambil Tahun Akademik Aktif (GET)
-static Future<List<dynamic>> fetchTahunAkademikAktif() async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/tahun-akademik/aktif"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data is List ? data : [data];
-    }
-    return [];
-  } catch (e) {
-    print("Error fetch TA aktif: $e");
-    return [];
-  }
-}
-
-// 2. Ambil Semua Data User dengan Role Dosen (GET)
-static Future<List<dynamic>> fetchAllDosenRaw() async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/dosen"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data is List ? data : [];
-    }
-    return [];
-  } catch (e) {
-    print("Error fetch list dosen: $e");
-    return [];
-  }
-}
-
-// 3. Ambil Mata Kuliah Berdasarkan ID Tahun Akademik (GET)
-static Future<List<dynamic>> fetchMataKuliahByTA(int taId) async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/mata-kuliah?tahun_akademik_id=$taId"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data is List ? data : (data['data'] is List ? data['data'] : []);
-    }
-    return [];
-  } catch (e) {
-    print("Error fetch mata kuliah by TA: $e");
-    return [];
-  }
-}
-
-// 4. Ambil Kelas Berdasarkan ID Tahun Akademik & Kueri Pencarian (GET)
-static Future<List<dynamic>> fetchKelasByTA(int taId, {String search = ""}) async {
-  try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/kelas?tahun_akademik_id=$taId&search=$search"),
-      headers: await _getHeaders(),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data is List ? data : [];
-    }
-    return [];
-  } catch (e) {
-    print("Error fetch kelas by TA: $e");
-    return [];
-  }
-}
-
-// 5. Tambah Beban Mengajar Dosen Baru (POST ke /api/akademik/{id_kelas}/dosen)
-// Perbarui fungsi assignDosenKeKelas di dalam class AcademicService:
-
-static Future<bool> assignDosenKeKelas(int idKelas, Map<String, dynamic> bodyData) async {
-  try {
-    final response = await http.post(
-      Uri.parse("$baseUrl/kelas/$idKelas/dosen"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...await _getHeaders(),
-      },
-      body: jsonEncode(bodyData),
-    );
-
-    // DEBUGGING: Membantu Anda melihat kembalian struktur JSON baru di konsol log
-    print("========== DEBUG ASSIGN DOSEN ==========");
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final resData = jsonDecode(response.body);
-      
-      // Validasi berdasarkan struktur baru yang memiliki field 'message' atau objek 'data'
-      if (resData is Map && (resData.containsKey('data') || resData['message'] != null)) {
-        return true; 
+  // 2. Fetch Detail Kelas Berdasarkan ID (GET)
+  static Future<Map<String, dynamic>?> fetchDetailKelas(int idKelas) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/kelas/$idKelas"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        // Ambil objek "kelas" dari response
+        return data['kelas'] as Map<String, dynamic>;
       }
+      return null;
+    } catch (e) {
+      print("Error fetch detail kelas: $e");
+      return null;
     }
-    return false;
-  } catch (e) {
-    print("Error assign dosen ke kelas: $e");
-    return false;
   }
-}
+
+  // 3. Tambah Kelas Baru (POST)
+  static Future<bool> createKelas(Map<String, dynamic> bodyData) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/kelas"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode(bodyData),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print("Error create kelas: $e");
+      return false;
+    }
+  }
+
+  // 4. Ubah Data Kelas (PUT)
+  static Future<bool> updateKelas(
+    int idKelas,
+    Map<String, dynamic> bodyData,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse("$baseUrl/kelas/$idKelas"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode(bodyData),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error update kelas: $e");
+      return false;
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // 1. Fetch Detail Kelas & Mahasiswa Didalamnya (GET)
+  static Future<Map<String, dynamic>?> fetchDetailKelolaKelas(
+    int idKelas,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/kelas/$idKelas"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print("Error fetch kelola kelas: $e");
+      return null;
+    }
+  }
+
+  // 2. Fetch List Anggota Mahasiswa di Kelas Tersebut (GET)
+  static Future<List<dynamic>> fetchMahasiswaKelas(int idKelas) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/kelas/$idKelas/mahasiswa"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) {
+          return data;
+        } else if (data is Map && data.containsKey('data')) {
+          return data['data'];
+        }
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch mahasiswa kelas: $e");
+      return [];
+    }
+  }
+
+  // 3. Hapus/Keluarkan Mahasiswa dari Kelas (DELETE)
+  static Future<bool> deleteMahasiswaDariKelas(int idMahasiswaMk) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("$baseUrl/mahasiswa-kelas/$idMahasiswaMk"),
+        headers: await _getHeaders(),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error delete mahasiswa kelas: $e");
+      return false;
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // Fetch Data Beban Mengajar Dosen (GET)
+  static Future<List<dynamic>> fetchBebanMengajarDosen() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/dosen/beban-mengajar"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch beban mengajar dosen: $e");
+      return [];
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // 1. Ambil Tahun Akademik Aktif (GET)
+  static Future<List<dynamic>> fetchTahunAkademikAktif() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/tahun-akademik/aktif"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data is List ? data : [data];
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch TA aktif: $e");
+      return [];
+    }
+  }
+
+  // 2. Ambil Semua Data User dengan Role Dosen (GET)
+  static Future<List<dynamic>> fetchAllDosenRaw() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/dosen"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data is List ? data : [];
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch list dosen: $e");
+      return [];
+    }
+  }
+
+  // 3. Ambil Mata Kuliah Berdasarkan ID Tahun Akademik (GET)
+  static Future<List<dynamic>> fetchMataKuliahByTA(int taId) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/mata-kuliah?tahun_akademik_id=$taId"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data is List ? data : (data['data'] is List ? data['data'] : []);
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch mata kuliah by TA: $e");
+      return [];
+    }
+  }
+
+  // 4. Ambil Kelas Berdasarkan ID Tahun Akademik & Kueri Pencarian (GET)
+  static Future<List<dynamic>> fetchKelasByTA(
+    int taId, {
+    String search = "",
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/kelas?tahun_akademik_id=$taId&search=$search"),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data is List ? data : [];
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch kelas by TA: $e");
+      return [];
+    }
+  }
+
+  // 5. Tambah Beban Mengajar Dosen Baru (POST ke /api/akademik/{id_kelas}/dosen)
+  // Perbarui fungsi assignDosenKeKelas di dalam class AcademicService:
+
+  static Future<bool> assignDosenKeKelas(
+    int idKelas,
+    Map<String, dynamic> bodyData,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/kelas/$idKelas/dosen"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode(bodyData),
+      );
+
+      // DEBUGGING: Membantu Anda melihat kembalian struktur JSON baru di konsol log
+      print("========== DEBUG ASSIGN DOSEN ==========");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final resData = jsonDecode(response.body);
+
+        // Validasi berdasarkan struktur baru yang memiliki field 'message' atau objek 'data'
+        if (resData is Map &&
+            (resData.containsKey('data') || resData['message'] != null)) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print("Error assign dosen ke kelas: $e");
+      return false;
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // Fetch Seluruh List Mata Kuliah (GET)
+  static Future<List<dynamic>> fetchAllMataKuliahRaw() async {
+    try {
+      // Menggunakan IP lokal spesifik sesuai instruksi Anda, atau bisa gunakan konstanta baseUrl Anda jika sudah dialihkan
+      const String urlMataKuliah =
+          "http://192.168.1.83:8000/api/akademik/mata-kuliah";
+
+      final response = await http.get(
+        Uri.parse(urlMataKuliah),
+        headers: await _getHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) {
+          return data;
+        } else if (data is Map && data.containsKey('data')) {
+          return data['data'];
+        }
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch mata kuliah: $e");
+      return [];
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // 1. Ambil Data Program Studi untuk Dropdown (GET)
+  static Future<List<dynamic>> fetchProdis() async {
+    try {
+      const String urlProdi = "http://192.168.1.83:8000/api/akademik/prodis";
+      final response = await http.get(
+        Uri.parse(urlProdi),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data is List ? data : [];
+      }
+      return [];
+    } catch (e) {
+      print("Error fetch prodis: $e");
+      return [];
+    }
+  }
+
+  // 2. Kirim Data Mata Kuliah Baru (POST)
+  static Future<bool> createMataKuliah(Map<String, dynamic> bodyData) async {
+    try {
+      const String urlStoreMK =
+          "http://192.168.1.83:8000/api/akademik/mata-kuliah";
+      final response = await http.post(
+        Uri.parse(urlStoreMK),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode(bodyData),
+      );
+
+      print("========== DEBUG STORE MATA KULIAH ==========");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print("Error create mata kuliah: $e");
+      return false;
+    }
+  }
+
+  // Tambahkan di dalam class AcademicService:
+
+  // 1. Ambil Detail Mata Kuliah Berdasarkan ID (GET)
+  static Future<Map<String, dynamic>?> fetchDetailMataKuliah(int idMk) async {
+    try {
+      final String urlDetail =
+          "http://192.168.1.83:8000/api/akademik/mata-kuliah/$idMk";
+      final response = await http.get(
+        Uri.parse(urlDetail),
+        headers: await _getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      print("Error fetch detail mata kuliah: $e");
+      return null;
+    }
+  }
+
+  // 2. Update Perubahan Data Mata Kuliah (PUT)
+  static Future<bool> updateMataKuliah(
+    int idMk,
+    Map<String, dynamic> bodyData,
+  ) async {
+    try {
+      final String urlUpdate =
+          "http://192.168.1.83/api/akademik/mata-kuliah/$idMk";
+      final response = await http.put(
+        Uri.parse(urlUpdate),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...await _getHeaders(),
+        },
+        body: jsonEncode(bodyData),
+      );
+
+      print("========== DEBUG UPDATE MATA KULIAH ==========");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print("Error update mata kuliah: $e");
+      return false;
+    }
+  }
 }
