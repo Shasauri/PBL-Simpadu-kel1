@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   // Samakan Base URL agar seragam di seluruh aplikasi
-  static const String baseUrl = "https://admin4e06.vps-poliban.my.id/api/akademik";
+  static const String baseUrl = "http://10.146.237.167:8000/api/akademik";
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await http.post(

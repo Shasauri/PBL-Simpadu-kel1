@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_kel1/pages/adminAkademik/dosen_pengajar_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/kelas_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/prodi_jurusan_page.dart';
 import 'package:mobile_kel1/pages/adminAkademik/profil_admin_akademik_page.dart';
@@ -221,6 +222,12 @@ class _DashboardAdminAkademikState extends State<DashboardAdminAkademik> {
                       label: "Dosen",
                       onTap: () {
                         Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DosenPengajarPage(),
+                          ),
+                        );
                       },
                     ),
                     _buildDrawerItem(
